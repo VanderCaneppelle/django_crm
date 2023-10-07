@@ -25,7 +25,7 @@ def home(request):
                 request, 'There was an error Logging In, please try again.')
             return redirect('home')
     else:
-        return render(request, 'home.html', {'records': records})
+        return render(request, 'index.html', {'records': records})
 
 
 # def login_user(request):

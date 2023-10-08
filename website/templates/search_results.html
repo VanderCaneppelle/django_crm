@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% if user.is_authenticated %}
-<form class="d-flex" role="search" method="POST" , action="{% url 'search_results' %}">
-    {%csrf_token%}
-    <input type="search" placeholder="Search ID" aria-label="Search" name="searched">
-    <button class="btn btn-outline-secondary" type="submit">Search</button>
-</form>
+
+
+{% if searched %}
+
+<h1>You searched for ID: {{searched}} </h1>
+
 <br />
 <table class="table table-striped table-hover  table-bordered">
     <thead class='table-dark'>
@@ -37,35 +37,14 @@
             <td>{{record.zipcode}}</td>
             <td>{{record.created_at}}</td>
             <td><a href="{% url 'record' record.id %}">{{record.id}}</a></td>
+            {%endfor%}
         </tr>
-
-        {%endfor%}
-
         {%endif%}
-
-
-    </tbody>
 </table>
-
-
 {% else %}
-<div class="col-md-6 offset-md-3">
-    <h1>Login</h1>
-    <br />
-    <form method="POST" action="{% url 'home' %}">
-        {% csrf_token %}
-        <div class="mb-3">
-            <input type="text" class="form-control" name="username" placeholder="Username" required>
-        </div>
-        <div class="mb-3">
-            <input type="password" class="form-control" name="password" placeholder="Password" required>
-        </div>
-        <button type="submit" class="btn btn-secondary">Login</button>
-    </form>
-</div>
+<h1>You forgot to type</h1>
 
 
 {% endif %}
-
 
 {% endblock %}

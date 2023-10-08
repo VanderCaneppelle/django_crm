@@ -111,3 +111,21 @@ def update_record(request, pk):
     else:
         messages.error(request, "You must be logged in to update a record!")
         return redirect('home')
+
+
+def search_results(request):
+    if request.method == "POST":
+        searched = request.POST['searched']
+
+        if not searched:
+            messages.error(request, "No ID entered!")
+            return redirect('home')
+
+        records = Record.objects.filter(id=searched)
+        if not records:
+            messages.error(request, "No ID found!")
+            return redirect('home')
+        return render(request, "search_results.html", {'searched': searched, 'records': records})
+
+    else:
+        return render(request, "search_results.html", {})

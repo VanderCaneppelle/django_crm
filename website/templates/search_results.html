@@ -37,10 +37,15 @@
             <td>{{record.zipcode}}</td>
             <td>{{record.created_at}}</td>
             <td><a href="{% url 'record' record.id %}">{{record.id}}</a></td>
+
+
             {%endfor%}
         </tr>
+
         {%endif%}
 </table>
+<a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
+
 {% else %}
 <h1>You forgot to type</h1>
 

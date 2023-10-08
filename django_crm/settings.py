@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-i!psz3vm^3eq4im&d4_iqf!5#0mgf^t%o&de!&(mj!4_lq(*ej
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['/vercel.app']
+ALLOWED_HOSTS = ['django-crm-gilt.vercel.app']
 
 
 # Application definition

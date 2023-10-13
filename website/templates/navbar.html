@@ -14,6 +14,18 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'add_record' %}">Add Records</a>
                 </li>
+                <li class="nav-item dropdown"> <!-- Container do dropdown -->
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Tournament
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown"> <!-- Dropdown menu -->
+                        <a class="dropdown-item" href="{% url 'create_tournament' %}">Create Tournament</a>
+                        <a class="dropdown-item" href="{% url 'tournament_list' %}">List of Tournament</a>
+                    </div>
+                </li>
+
+
 
 
                 {% else %}

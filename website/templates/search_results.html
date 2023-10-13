@@ -14,6 +14,8 @@
             <th scope="col">Name</th>
             <th scope="col">E-mail</th>
             <th scope="col">Phone</th>
+            <th scope="col">Side</th>
+            <th scope="col">Pix</th>
             <th scope="col">Address</th>
             <th scope="col">City</th>
             <th scope="col">State</th>
@@ -31,18 +33,22 @@
                 {{record.last_name}}</td>
             <td>{{record.email}}</td>
             <td>{{record.phone}}</td>
+            <td>{{record.side}}</td>
+            <td>{{record.pix}}</td>
             <td>{{record.address}}</td>
             <td>{{record.city}}</td>
             <td>{{record.state}}</td>
             <td>{{record.zipcode}}</td>
             <td>{{record.created_at}}</td>
             <td><a href="{% url 'record' record.id %}">{{record.id}}</a></td>
-
-
-            {%endfor%}
         </tr>
 
+        {%endfor%}
+
         {%endif%}
+
+
+    </tbody>
 </table>
 <a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
 

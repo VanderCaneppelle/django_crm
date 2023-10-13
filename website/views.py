@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .forms import SignUpForm, AddRecordForm
-from .models import Record
+from .forms import SignUpForm, AddRecordForm, TournamentForm
+from .models import Record, Tournament
 
 # Create your views here.
 
@@ -129,3 +129,68 @@ def search_results(request):
 
     else:
         return render(request, "search_results.html", {})
+
+
+def create_tournament(request):
+    if request.user.is_authenticated:
+        return render(request, "create_tournament.html", {})
+
+    else:
+        messages.error(
+            request, "You must be logged in access the tournament area")
+        return redirect('home')
+
+
+def create_tournament(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            form = TournamentForm(request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Tournament Created')
+
+                # Redirecionar para a lista de torneios
+                return redirect('tournament_list')
+        else:
+            form = TournamentForm()
+
+        return render(request, 'create_tournament.html', {'form': form})
+    else:
+        messages.error(
+            request, "You must be logged in access the tournament area")
+        return redirect('home')
+
+
+def tournament_list(request):
+    if request.user.is_authenticated:
+        tournaments = Tournament.objects.all()
+
+        if not tournaments:
+            messages.error(request, 'No Tournaments created')
+            return redirect('create_tournament')
+        else:
+            return render(request, 'tournament_list.html', {'tournaments': tournaments})
+    else:
+        messages.error(request, 'You must be logged in see Tournaments')
+        return redirect('home')
+
+
+def view_tournament(request, pk):
+    if request.user.is_authenticated:
+        tournament = Tournament.objects.get(id=pk)
+        return render(request, 'view_tournament.html', {'tournament': tournament})
+
+    else:
+        messages.error(request, 'You must be logged in see Tournaments')
+        return redirect('home')
+
+
+def customer_record(request, pk):
+
+    if request.user.is_authenticated:
+        # look up records
+        customer_record = Record.objects.get(id=pk)
+        return render(request, 'record.html', {'customer_record': customer_record})
+    else:
+        messages.error(request, "You must be logged in to views that page")
+        return redirect('home')

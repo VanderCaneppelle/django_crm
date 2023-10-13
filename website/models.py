@@ -9,6 +9,9 @@ class Record(models.Model):
     last_name = models.CharField(max_length=50)
     email = models.CharField(max_length=100)
     phone = models.CharField(max_length=11)
+    side = models.CharField(max_length=1, default='D',
+                            choices=[('D', 'D'), ('E', 'E')])
+    pix = models.CharField(max_length=50)
     address = models.CharField(max_length=100)
     city = models.CharField(max_length=50)
     state = models.CharField(max_length=50)
@@ -16,3 +19,13 @@ class Record(models.Model):
 
     def __str__(self):
         return (f'{self.first_name} {self.last_name}')
+
+
+class Tournament(models.Model):
+    name = models.CharField(max_length=100)
+    date = models.DateField(auto_now=True)
+    max_players = models.IntegerField()
+    players = models.ManyToManyField(Record)
+
+    def __str__(self):
+        return self.name

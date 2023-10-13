@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<div class="card">
+    <h5 class="card-header"> {{tournament.name}}- ID: {{tournament.id}}
+        </p>
+    </h5>
+
+    <div class="card-body">
+        <div class="card" style="width: 30rem;">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong> Name: </strong> {{tournament.name}}</li>
+                <li class="list-group-item"><strong> Players: </strong>
+                    {% for player in tournament.players.all %}
+                    {{ player.first_name }} {{ player.last_name }},
+                    {% endfor %}</li>
+                <li class="list-group-item"><strong> Created at: </strong>{{tournament.date}}</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<br />
+<a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
+
+
+
+{% endblock %}

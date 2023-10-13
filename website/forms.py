@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import Record
+from .models import Record, Tournament
 
 
 class SignUpForm(UserCreationForm):
@@ -50,6 +50,12 @@ class AddRecordForm(forms.ModelForm):
     phone = forms.CharField(required=True, widget=forms.widgets.TextInput(
         attrs={"placeholder": "Phone", "class": "form-control"}), label="")
 
+    side = forms.CharField(required=True, widget=forms.widgets.TextInput(
+        attrs={"placeholder": "D or E", "class": "form-control"}), label="")
+
+    pix = forms.CharField(required=True, widget=forms.widgets.TextInput(
+        attrs={"placeholder": "Pix", "class": "form-control"}), label="")
+
     address = forms.CharField(required=True, widget=forms.widgets.TextInput(
         attrs={"placeholder": "Address", "class": "form-control"}), label="")
 
@@ -65,3 +71,18 @@ class AddRecordForm(forms.ModelForm):
     class Meta:
         model = Record
         exclude = ("user",)
+
+
+class TournamentForm(forms.ModelForm):
+    name = forms.CharField(required=True, widget=forms.widgets.TextInput(
+        attrs={"placeholder": "Tournament Name", "class": "form-control"}), label="")
+
+    max_players = forms.IntegerField(required=True, widget=forms.widgets.TextInput(
+        attrs={"placeholder": "Number of players", "class": "form-control"}), label="")
+
+    players = forms.ModelMultipleChoiceField(queryset=Record.objects.all(),
+                                             required=True, widget=forms.widgets.CheckboxSelectMultiple())
+
+    class Meta:
+        model = Tournament
+        fields = ['name', 'max_players', 'players']

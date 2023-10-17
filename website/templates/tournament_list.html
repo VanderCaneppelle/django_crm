@@ -2,39 +2,32 @@
 
 {% block content %}
 
-
-
-<table class="table table-striped table-hover  table-bordered">
-    <thead class='table-dark'>
+<table class="table table-striped table-hover table-bordered">
+    <thead class="table-dark">
         <tr>
             <th scope="col">ID</th>
             <th scope="col">Name</th>
             <th scope="col">Players</th>
-
+            <th scope="col">Details</th>
         </tr>
     </thead>
     <tbody>
         {% if tournaments %}
+        {% for tournament in tournaments %}
         <tr>
-            {% for tournament in tournaments%}
-            <td>{{tournament.id}}</td>
-
-            <td>{{tournament.name}}</td>
+            <td>{{ tournament.id }}</td>
+            <td>{{ tournament.name }}</td>
             <td>
                 {% for player in tournament.players.all %}
                 {{ player.first_name }} {{ player.last_name }},
                 {% endfor %}
-
             </td>
+            <td><a href="{% url 'view_tournament' tournament.id %}">Manage Tournament</a></td>
+
         </tr>
-
-        {%endfor%}
-
-        {%endif%}
-
-
+        {% endfor %}
+        {% endif %}
     </tbody>
 </table>
-
 
 {% endblock %}

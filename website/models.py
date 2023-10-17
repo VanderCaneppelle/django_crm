@@ -21,11 +21,22 @@ class Record(models.Model):
         return (f'{self.first_name} {self.last_name}')
 
 
+class Doubles(models.Model):
+    player1 = models.ForeignKey(
+        Record, on_delete=models.CASCADE, related_name='player1_doubles')
+    player2 = models.ForeignKey(
+        Record, on_delete=models.CASCADE, related_name='player2_doubles')
+
+    def __str__(self):
+        return f"{self.player1} and {self.player2}"
+
+
 class Tournament(models.Model):
     name = models.CharField(max_length=100)
     date = models.DateField(auto_now=True)
     max_players = models.IntegerField()
     players = models.ManyToManyField(Record)
+    doubles = models.ManyToManyField(Doubles, blank=True)
 
     def __str__(self):
         return self.name

@@ -22,7 +22,66 @@
     </div>
 </div>
 <br />
-<a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
+<a href="{% url 'tournament_list' %}" class="btn btn-secondary">Back</a>
+<a href="{% url 'update_tournament' tournament.id %}" class="btn btn-primary" id="update-button">Update</a>
+<a href="{% url 'create_teams' tournament.id %}" class="btn btn-primary">Create Teams</a>
+<a href="#" class="btn btn-primary">Create Matches</a>
+<a href="{% url 'delete_tournament' tournament.id %}" class="btn btn-danger">Cancel & Delete</a>
+<hr>
+
+<!-- Dentro do bloco content em view_tournament.html -->
+<div id="doubles-container" style="display: none;">
+    <h2>Doubles</h2>
+    <ul id="doubles-list">
+        <!-- As informações das equipes serão exibidas aqui. -->
+    </ul>
+</div>
+
+<button id="load-teams-button" class="btn btn-primary">Load Teams</button>
+
+<script>
+    document.getElementById('load-teams-button').addEventListener('click', function () {
+        fetch("{% url 'get_teams_data' tournament.id %}")
+            .then(response => response.json())
+            .then(data => {
+                const doublesContainer = document.getElementById('doubles-container');
+                const doublesList = document.getElementById('doubles-list');
+
+                // Limpe o conteúdo atual do 'doubles-list' para recriar as caixas das duplas.
+                doublesList.innerHTML = '';
+
+                if (data.length > 0) {
+                    // Se houver dados, desabilite o botão "Update".
+                    document.getElementById('update-button').disabled = true;
+
+
+
+                    data.forEach(double => {
+                        const doubleBox = document.createElement('div');
+                        doubleBox.className = 'double-box'; // Adicione a classe de estilo
+                        doubleBox.style.border = '1px solid #ccc';
+                        doubleBox.style.padding = '10px';
+                        doubleBox.style.margin = '10px';
+                        doubleBox.style.backgroundColor = '#f5f5f5';
+                        doubleBox.style.borderRadius = '5px';
+                        doubleBox.style.maxWidth = '300px'; // Limite a largura a 50px
+                        doubleBox.style.overflowX = 'auto'; // Adicione uma barra de rolagem horizontal se o conteúdo exceder 50px
+                        doubleBox.textContent = double.player1 + ' and ' + double.player2;
+                        doublesList.appendChild(doubleBox);
+                    });
+                } else {
+                    // Se não houver dados, mantenha o botão "Update" habilitado.
+                    document.getElementById('update-button').disabled = false;
+                }
+
+                // Exiba o 'doubles-container'.
+                doublesContainer.style.display = 'block';
+            });
+    });
+</script>
+
+
+
 
 
 

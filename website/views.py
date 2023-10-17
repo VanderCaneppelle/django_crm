@@ -1,8 +1,10 @@
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from random import shuffle
 from .forms import SignUpForm, AddRecordForm, TournamentForm
-from .models import Record, Tournament
+from .models import Record, Tournament, Doubles
 
 # Create your views here.
 
@@ -133,16 +135,6 @@ def search_results(request):
 
 def create_tournament(request):
     if request.user.is_authenticated:
-        return render(request, "create_tournament.html", {})
-
-    else:
-        messages.error(
-            request, "You must be logged in access the tournament area")
-        return redirect('home')
-
-
-def create_tournament(request):
-    if request.user.is_authenticated:
         if request.method == 'POST':
             form = TournamentForm(request.POST)
             if form.is_valid():
@@ -185,12 +177,80 @@ def view_tournament(request, pk):
         return redirect('home')
 
 
-def customer_record(request, pk):
-
+def delete_tournament(request, pk):
     if request.user.is_authenticated:
-        # look up records
-        customer_record = Record.objects.get(id=pk)
-        return render(request, 'record.html', {'customer_record': customer_record})
+
+        tournament = Tournament.objects.get(id=pk)
+        name = tournament.name
+        tournament.delete()
+
+        messages.success(
+            request, f"{name} was deleted Successfully!")
+        return redirect('tournament_list')
+
     else:
-        messages.error(request, "You must be logged in to views that page")
+        messages.error(
+            request, "You must be logged in to delete a Tournament!")
         return redirect('home')
+
+
+def update_tournament(request, pk):
+    if request.user.is_authenticated:
+        current_tournament = Tournament.objects.get(id=pk)
+        form = TournamentForm(request.POST or None,
+                              instance=current_tournament)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Tournament has been updated!")
+            return redirect('tournament_list')
+        return render(request, "update_tournament.html", {'form': form})
+    else:
+        messages.error(
+            request, "You must be logged in to update a Tournament!")
+        return redirect('home')
+
+
+def create_teams(request, pk):
+    if request.user.is_authenticated:
+        tournament = Tournament.objects.get(id=pk)
+
+        if not tournament.doubles.exists():
+            players_D = Record.objects.filter(side='D')
+            players_E = Record.objects.filter(side='E')
+
+            if players_D.count() < 2 or players_E.count() < 2:
+                messages.error(request, " There is not enough players.")
+            else:
+                shuffle(list(players_D))
+                shuffle(list(players_E))
+
+                for i in range(len(players_D)):
+                    team_D = players_D[i]
+                    team_E = players_E[i]
+                    doubles_team = Doubles.objects.create(
+                        player1=team_D, player2=team_E)
+                    tournament.doubles.add(doubles_team)
+                    messages.success(request, "Teams Created!")
+
+        messages.success(request, "Teams were already created!")
+        return redirect('view_tournament', pk=pk)
+
+    else:
+        messages.error(request, "You must be logged in to create teams!")
+        return redirect('home')
+
+
+def get_teams_data(request, pk):
+    if request.user.is_authenticated:
+        tournament = Tournament.objects.get(id=pk)
+        doubles = tournament.doubles.all()
+
+        data = []
+
+        for double in doubles:
+            data.append({
+                "player1": double.player1.first_name + " " + double.player1.last_name,
+                "player2": double.player2.first_name + " " + double.player2.last_name
+            })
+
+        return JsonResponse(data, safe=False)

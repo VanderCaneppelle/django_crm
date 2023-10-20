@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import Record, Tournament
+from .models import Record, Tournament, Match
 
 
 class SignUpForm(UserCreationForm):
@@ -86,3 +86,14 @@ class TournamentForm(forms.ModelForm):
     class Meta:
         model = Tournament
         fields = ['name', 'max_players', 'players']
+
+
+class MatchScoreForm(forms.ModelForm):
+    result_a = forms.IntegerField(widget=forms.widgets.TextInput(
+        attrs={"placeholder": "Score", "class": "form-control"}), label="")
+    result_b = forms.IntegerField(widget=forms.widgets.TextInput(
+        attrs={"placeholder": "Score", "class": "form-control"}), label="")
+
+    class Meta:
+        model = Match
+        fields = ['result_a', 'result_b']

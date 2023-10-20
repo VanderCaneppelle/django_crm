@@ -31,12 +31,37 @@ class Doubles(models.Model):
         return f"{self.player1} and {self.player2}"
 
 
+class Match(models.Model):
+    date = models.DateTimeField()
+    team_a = models.ForeignKey(
+        Doubles, on_delete=models.CASCADE, related_name='team_a_matches')
+    team_b = models.ForeignKey(
+        Doubles, on_delete=models.CASCADE, related_name='team_b_matches')
+    result_a = models.PositiveIntegerField(null=True, blank=True)
+    result_b = models.PositiveIntegerField(null=True, blank=True)
+    tournament = models.ForeignKey(
+        'Tournament', on_delete=models.CASCADE, related_name='matches')
+
+    def __str__(self):
+        return f"{self.team_a} vs {self.team_b}"
+
+    def get_winner(self):
+        if self.result_a > self.result_b:
+            return self.team_a
+        elif self.result_a < self.result_b:
+            return self.team_b
+        else:
+            return None  # Indicar empate
+
+
 class Tournament(models.Model):
     name = models.CharField(max_length=100)
     date = models.DateField(auto_now=True)
     max_players = models.IntegerField()
     players = models.ManyToManyField(Record)
     doubles = models.ManyToManyField(Doubles, blank=True)
+    match_instances = models.ManyToManyField(
+        Match, blank=True, related_name='tournament_matches')
 
     def __str__(self):
         return self.name

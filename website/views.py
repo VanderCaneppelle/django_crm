@@ -1,10 +1,12 @@
+from django.http import HttpResponseRedirect
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from random import shuffle
-from .forms import SignUpForm, AddRecordForm, TournamentForm
-from .models import Record, Tournament, Doubles
+from .forms import SignUpForm, AddRecordForm, TournamentForm, MatchScoreForm
+from .models import Record, Tournament, Doubles, Match
+from django.utils import timezone
 
 # Create your views here.
 
@@ -254,3 +256,62 @@ def get_teams_data(request, pk):
             })
 
         return JsonResponse(data, safe=False)
+
+
+def gen_1_phase_matches(request, pk):
+    # Obtenha o torneio com base no ID (pk)
+    tournament = get_object_or_404(Tournament, id=pk)
+
+    # Obtenha todas as duplas associadas a este torneio
+    doubles = Doubles.objects.filter(tournament=tournament)
+
+    if tournament.matches.count() == 0:
+        # Crie as partidas
+        matches = []
+        for i, team_a in enumerate(doubles):
+            for team_b in doubles[i+1:]:
+                # Crie a partida apenas se team_a e team_b forem diferentes
+                match = Match.objects.create(
+                    team_a=team_a, team_b=team_b, tournament=tournament, date=timezone.now())
+                matches.append(match)
+        # Redirecione de volta para a página do torneio com as partidas criadas
+        return render(request, "first_phase_matches.html", {'tournament': tournament, 'matches': matches, 'doubles': doubles})
+
+    else:
+        # Recupere as partidas existentes
+        matches = Match.objects.filter(tournament=tournament)
+        messages.error(request, "Matches were already created!")
+        return render(request, "first_phase_matches.html", {'tournament': tournament, 'matches': matches, 'doubles': doubles})
+
+
+def save_match_scores(request, pk):
+    # Obtenha o torneio com base no ID (pk)
+    tournament = get_object_or_404(Tournament, id=pk)
+
+    # Obtenha todas as partidas do torneio
+    matches = Match.objects.filter(tournament=tournament)
+
+    if request.method == 'POST':
+        form = MatchScoreForm(request.POST)
+        if form.is_valid():
+            # Processar o formulário e salvar as pontuações no banco de dados
+            match_id = request.POST.get('match_id')  # Acesse o campo oculto
+            result_a = form.cleaned_data['result_a']
+            result_b = form.cleaned_data['result_b']
+
+            match = Match.objects.get(pk=match_id)
+            match.result_a = result_a
+            match.result_b = result_b
+            match.save()
+
+            initial_results = {}  # Use um dicionário para mapear match_id para resultados
+            for match in matches:
+                initial_results[f'result_a_{match.id}'] = match.result_a
+                initial_results[f'result_b_{match.id}'] = match.result_b
+
+            form = MatchScoreForm(initial=initial_results)
+
+    else:
+        form = MatchScoreForm()
+
+    return render(request, 'first_phase_matches.html', {'tournament': tournament, 'matches': matches, 'form': form})

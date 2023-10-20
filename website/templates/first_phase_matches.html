@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Partidas da Primeira Fase</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Time A</th>
+            <th>Pontuação Time A</th>
+            <th>Pontuação Time B</th>
+            <th>Time B</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for match in matches %}
+        <tr>
+            <form method="post" action="{% url 'save_match_scores' tournament.id %}" id="form{{ match.id }}">
+                {% csrf_token %}
+                <td>{{ match.team_a.player1 }} e {{ match.team_a.player2 }}</td>
+                <td>
+                    <input type="number" name="result_a" value="{{ match.result_a }}" id="result_a{{ match.id }}"
+                        placeholder="Score" class="form-control">
+                </td>
+                <td>
+                    <input type="number" name="result_b" value="{{ match.result_b }}" id="result_b{{ match.id }}"
+                        placeholder="Score" class="form-control">
+                </td>
+                <input type="hidden" name="match_id" value="{{ match.id }}">
+                <td>{{ match.team_b.player1 }} e {{ match.team_b.player2 }}</td>
+                <td>
+                    <button type="submit" class="btn btn-primary save-scores-button"
+                        data-match-id="{{ match.id }}">Salvar Pontuações</button>
+                </td>
+            </form>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<hr>
+<h1>RANKING</h1>
+{% for double in doubles %}
+{{double.player1}} e {{double.player2}}
+{% endfor %}
+
+
+
+
+
+{% endblock %}

@@ -26,6 +26,14 @@ urlpatterns = [
     path('tournament/<int:pk>/get_teams_data/',
          views.get_teams_data, name='get_teams_data'),
 
+    path('gen_1_phase_matches/<int:pk>',
+         views.gen_1_phase_matches, name='gen_1_phase_matches'),
+
+    path('save_match_scores/<int:pk>/',
+         views.save_match_scores, name='save_match_scores'),
+
+
+
 
 
 

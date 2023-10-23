@@ -7,6 +7,7 @@ from random import shuffle
 from .forms import SignUpForm, AddRecordForm, TournamentForm, MatchScoreForm
 from .models import Record, Tournament, Doubles, Match
 from django.utils import timezone
+from django.db.models.functions import Coalesce
 
 # Create your views here.
 
@@ -314,33 +315,28 @@ def save_match_scores(request, pk):
             #
             for double in doubles:
                 if match.team_a_id == double.id:
-                    if double.scored_points is None:
-                        double.scored_points = 0
-                        double.conc_points = 0
-                        double.wins = 0
-                        double.defeats = 0
-                        double.save()
+                    double.scored_points = Coalesce(
+                        double.scored_points, 0) + result_a
+                    double.conc_points = Coalesce(
+                        double.conc_points, 0) + result_b
 
-                    if match.result_a > match.result_b:
-                        double.scored_points += match.result_a
-                        double.conc_points += match.result_b
-                        double.wins += 1
-                        double.defeats += 0
+                    if result_a > result_b:
+                        double.wins = Coalesce(double.wins, 0) + 1
+                    else:
+                        double.defeats = Coalesce(double.defeats, 0) + 1
 
                 if match.team_b_id == double.id:
-                    if double.scored_points is None:
-                        double.scored_points = 0
-                        double.conc_points = 0
-                        double.wins = 0
-                        double.defeats = 0
-                        double.save()
+                    double.scored_points = Coalesce(
+                        double.scored_points, 0) + result_b
+                    double.conc_points = Coalesce(
+                        double.conc_points, 0) + result_a
 
-                    if match.result_b > match.result_a:
-                        double.scored_points += match.result_b
-                        double.conc_points += match.result_a
-                        double.wins += 1
-                        double.defeats += 0
-                        double.save()
+                    if result_b > result_a:
+                        double.wins = Coalesce(double.wins, 0) + 1
+                    else:
+                        double.defeats = Coalesce(double.defeats, 0) + 1
+
+                double.save()
 
             initial_results = {}  # Use um dicionário para mapear match_id para resultados
             for match in matches:

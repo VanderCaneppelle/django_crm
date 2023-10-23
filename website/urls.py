@@ -32,6 +32,12 @@ urlpatterns = [
     path('save_match_scores/<int:pk>/',
          views.save_match_scores, name='save_match_scores'),
 
+    path('get_tournament_ranking/<int:pk>/',
+         views.get_tournament_ranking, name='get_tournament_ranking'),
+
+
+
+
 
 
 

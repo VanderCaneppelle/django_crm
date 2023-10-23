@@ -284,12 +284,18 @@ def gen_1_phase_matches(request, pk):
         return render(request, "first_phase_matches.html", {'tournament': tournament, 'matches': matches, 'doubles': doubles})
 
 
+def _calculate_stats(result_a, result_b, team_a_id, team_b_id):
+
+    pass
+
+
 def save_match_scores(request, pk):
     # Obtenha o torneio com base no ID (pk)
     tournament = get_object_or_404(Tournament, id=pk)
 
     # Obtenha todas as partidas do torneio
     matches = Match.objects.filter(tournament=tournament)
+    doubles = Doubles.objects.filter(tournament=tournament)
 
     if request.method == 'POST':
         form = MatchScoreForm(request.POST)
@@ -304,6 +310,38 @@ def save_match_scores(request, pk):
             match.result_b = result_b
             match.save()
 
+            # adicionar total matches nas stats e fazer  verificação dos is none pelo numero de matches
+            #
+            for double in doubles:
+                if match.team_a_id == double.id:
+                    if double.scored_points is None:
+                        double.scored_points = 0
+                        double.conc_points = 0
+                        double.wins = 0
+                        double.defeats = 0
+                        double.save()
+
+                    if match.result_a > match.result_b:
+                        double.scored_points += match.result_a
+                        double.conc_points += match.result_b
+                        double.wins += 1
+                        double.defeats += 0
+
+                if match.team_b_id == double.id:
+                    if double.scored_points is None:
+                        double.scored_points = 0
+                        double.conc_points = 0
+                        double.wins = 0
+                        double.defeats = 0
+                        double.save()
+
+                    if match.result_b > match.result_a:
+                        double.scored_points += match.result_b
+                        double.conc_points += match.result_a
+                        double.wins += 1
+                        double.defeats += 0
+                        double.save()
+
             initial_results = {}  # Use um dicionário para mapear match_id para resultados
             for match in matches:
                 initial_results[f'result_a_{match.id}'] = match.result_a
@@ -315,3 +353,7 @@ def save_match_scores(request, pk):
         form = MatchScoreForm()
 
     return render(request, 'first_phase_matches.html', {'tournament': tournament, 'matches': matches, 'form': form})
+
+
+def get_tournament_ranking(request, pk):
+    return render(request, 'get_tournament_ranking.html', {})

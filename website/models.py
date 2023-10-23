@@ -27,6 +27,11 @@ class Doubles(models.Model):
     player2 = models.ForeignKey(
         Record, on_delete=models.CASCADE, related_name='player2_doubles')
 
+    scored_points = models.PositiveIntegerField(null=True, blank=True)
+    conc_points = models.PositiveIntegerField(null=True, blank=True)
+    wins = models.PositiveIntegerField(null=True, blank=True)
+    defeats = models.PositiveIntegerField(null=True, blank=True)
+
     def __str__(self):
         return f"{self.player1} and {self.player2}"
 
@@ -37,8 +42,8 @@ class Match(models.Model):
         Doubles, on_delete=models.CASCADE, related_name='team_a_matches')
     team_b = models.ForeignKey(
         Doubles, on_delete=models.CASCADE, related_name='team_b_matches')
-    result_a = models.PositiveIntegerField(null=True, blank=True)
-    result_b = models.PositiveIntegerField(null=True, blank=True)
+    result_a = models.PositiveIntegerField(null=False, blank=False, default=0)
+    result_b = models.PositiveIntegerField(null=False, blank=False, default=0)
     tournament = models.ForeignKey(
         'Tournament', on_delete=models.CASCADE, related_name='matches')
 

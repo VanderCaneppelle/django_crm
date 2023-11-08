@@ -27,10 +27,15 @@ class Doubles(models.Model):
     player2 = models.ForeignKey(
         Record, on_delete=models.CASCADE, related_name='player2_doubles')
 
-    scored_points = models.PositiveIntegerField(null=True, blank=True)
-    conc_points = models.PositiveIntegerField(null=True, blank=True)
-    wins = models.PositiveIntegerField(null=True, blank=True)
-    defeats = models.PositiveIntegerField(null=True, blank=True)
+    scored_points = models.PositiveIntegerField(default=0, blank=True)
+    conc_points = models.PositiveIntegerField(default=0, blank=True)
+    wins = models.PositiveIntegerField(default=0, blank=True)
+    defeats = models.PositiveIntegerField(default=0, blank=True)
+    balance = models.IntegerField(default=0, blank=True)
+
+    def save(self, *args, **kwargs):
+        self.balance = self.scored_points - self.conc_points
+        super(Doubles, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.player1} and {self.player2}"

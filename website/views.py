@@ -141,10 +141,23 @@ def create_tournament(request):
         if request.method == 'POST':
             form = TournamentForm(request.POST)
             if form.is_valid():
-                form.save()
+                # Create a new tournament instance but don't save it yet
+                tournament = form.save(commit=False)
+
+                tournament.save()
+
+                # Now, we need to process the players field to get the selected players
+                selected_players = form.cleaned_data['players']
+
+                # Add the selected players to the tournament
+                tournament.players.set(selected_players)
+
+                # Save the tournament with the selected players
+                tournament.save()
+
                 messages.success(request, 'Tournament Created')
 
-                # Redirecionar para a lista de torneios
+                # Redirect to the list of tournaments or wherever you want
                 return redirect('tournament_list')
         else:
             form = TournamentForm()
@@ -218,8 +231,11 @@ def create_teams(request, pk):
         tournament = Tournament.objects.get(id=pk)
 
         if not tournament.doubles.exists():
-            players_D = Record.objects.filter(side='D')
-            players_E = Record.objects.filter(side='E')
+            players_D = tournament.players.filter(side='D')
+            players_E = tournament.players.filter(side='E')
+
+            # players_D = Record.objects.filter(side='D')
+            # players_E = Record.objects.filter(side='E')
 
             if players_D.count() < 2 or players_E.count() < 2:
                 messages.error(request, " There is not enough players.")
@@ -358,6 +374,6 @@ def get_tournament_ranking(request, pk):
     # Obtenha todas as partidas do torneio
     matches = Match.objects.filter(tournament=tournament)
     doubles = Doubles.objects.filter(
-        tournament=tournament).order_by('wins', 'scored_points').reverse
+        tournament=tournament).order_by('wins', 'balance', 'scored_points').reverse
 
-    return render(request, 'get_tournament_ranking.html', {'doubles': doubles, 'matches': matches})
+    return render(request, 'get_tournament_ranking.html', {'doubles': doubles, 'matches': matches, 'tournament': tournament})

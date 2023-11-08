@@ -39,12 +39,8 @@
 </table>
 
 <hr>
-<h1>RANKING</h1>
-{% for double in doubles %}
-{{double.player1}} e {{double.player2}}
-{% endfor %}
 
-
+<a href="{% url 'get_tournament_ranking' tournament.id %}" class="btn btn-primary">See Ranking</a>
 
 
 

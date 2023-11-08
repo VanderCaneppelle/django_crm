@@ -352,4 +352,12 @@ def save_match_scores(request, pk):
 
 
 def get_tournament_ranking(request, pk):
-    return render(request, 'get_tournament_ranking.html', {})
+
+    tournament = get_object_or_404(Tournament, id=pk)
+
+    # Obtenha todas as partidas do torneio
+    matches = Match.objects.filter(tournament=tournament)
+    doubles = Doubles.objects.filter(
+        tournament=tournament).order_by('wins', 'scored_points').reverse
+
+    return render(request, 'get_tournament_ranking.html', {'doubles': doubles, 'matches': matches})

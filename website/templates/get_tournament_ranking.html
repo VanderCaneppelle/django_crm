@@ -4,4 +4,34 @@
 
 <h1> RANKING PAGE </h1>
 
+<table class="table table-striped table-hover table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Players</th>
+            <th scope="col">Wins</th>
+            <th scope="col">Scored points</th>
+            <th scope="col">Conceded points</th>
+            <th scope="col">Defeats</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if doubles %}
+        {% for double in doubles %}
+        <tr>
+            <td>{{ double.id }}</td>
+            <td>{{ double.player1.first_name }} / {{ double.player2.first_name }}</td>
+            <td>{{ double.wins }}</td>
+            <td>{{ double.scored_points }}</td>
+            <td>{{ double.conc_points }}</td>
+            <td>{{ double.defeats }}</td>
+
+
+
+        </tr>
+        {% endfor %}
+        {% endif %}
+    </tbody>
+</table>
+
 {% endblock %}
